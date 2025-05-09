@@ -19,6 +19,7 @@ require 'octokit'
 require 'netrc'
 require 'date'
 require 'yaml'
+require 'base64'
 
 require_relative '../config/setup'
 

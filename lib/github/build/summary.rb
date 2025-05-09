@@ -243,7 +243,19 @@ module Github
 
         return '' if failures.nil?
 
-        "```\n#{failures}\n```\n"
+        message = safe_decode64(failures)
+
+        "```\n#{message.gsub('<br>', "\n")}\n```\n"
+      end
+
+      def safe_decode64(input)
+        return Base64.decode64(input) if base64? input
+
+        input
+      end
+
+      def base64?(input)
+        Base64.strict_encode64(Base64.decode64(input.to_s)) == input.to_s
       end
 
       def build_message(job)
