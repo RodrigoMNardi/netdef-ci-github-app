@@ -182,7 +182,7 @@ class GithubApp < Sinatra::Base
     end
 
     def fetch_message
-      request.body.rewind
+      request.body.rewind if request.body.respond_to?(:rewind)
       @payload_raw = request.body.read
     end
   end
