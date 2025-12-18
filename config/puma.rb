@@ -17,6 +17,8 @@ threads 1, (ENV['RAILS_MAX_THREADS'] || 5).to_i
 
 port GitHubApp::Configuration.instance.config['port'] || 4667
 
+plugin :yabeda
+
 activate_control_app
 
 preload_app!

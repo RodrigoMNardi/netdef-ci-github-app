@@ -39,6 +39,15 @@ gem 'rake'
 # Delayed Job
 gem 'delayed_job_active_record'
 
+gem 'daemons'
+
+# Prometheus Exporter
+gem 'yabeda'
+gem 'yabeda-prometheus'
+gem 'yabeda-puma-plugin'
+gem 'yabeda-delayed_job'
+gem 'yabeda-http_requests'
+
 # Code lint
 gem 'rubocop', '1.56.1', group: %i[development test]
 gem 'rubocop-performance', group: %i[development test]

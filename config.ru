@@ -14,6 +14,11 @@ require 'rack/handler/puma'
 require 'rack/session/cookie'
 require 'securerandom'
 
+require 'yabeda/prometheus'
+require 'yabeda/puma/plugin'
+require 'yabeda/delayed_job'
+require 'yabeda/http_requests'
+
 require_relative 'app/github_app'
 require_relative 'config/delayed_job'
 
@@ -26,12 +31,31 @@ pids << spawn("RACK_ENV=#{ENV.fetch('RACK_ENV', 'development')} rake jobs:work Q
 
 use Rack::Session::Cookie, secret: File.read('.session.key'), same_site: true, max_age: 86_400
 
-Rackup::Handler::Puma.run Rack::URLMap.new('/' => GithubApp)
+Yabeda.configure!
 
-pids.each do |pid|
-  Process.kill('TERM', pid.to_i)
-rescue Errno::ESRCH
-  puts "Process #{pid} already dead"
+if defined?(Rack::Lint) && respond_to?(:middleware)
+  begin
+    middleware.reject! { |m, *_| m == Rack::Lint }
+  rescue StandardError
+    nil
+  end
 end
 
-exit 0
+module Yabeda
+  module Prometheus
+    class Exporter
+      alias orig_call call
+      def call(env)
+        status, headers, body = orig_call(env)
+        # Corrige o header para minúsculo se necessário
+        headers['content-type'] = headers.delete('Content-Type') if headers.key?('Content-Type')
+        [status, headers, body]
+      end
+    end
+  end
+end
+
+run Rack::URLMap.new(
+  '/' => GithubApp,
+  '/metrics' => Yabeda::Prometheus::Exporter
+)
