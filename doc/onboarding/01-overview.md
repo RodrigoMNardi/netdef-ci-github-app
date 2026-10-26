@@ -40,8 +40,9 @@ flowchart LR
 | Lint | Rubocop 1.56 (enforced in CI) |
 | Observability | `prometheus-client`, per-component log files in `logs/` |
 
-> The root `README.md` still mentions Sidekiq/Redis; the current code uses **Delayed Job**
-> (`config/delayed_job.rb`, `delayed_jobs` table). `config/sidekiq.*` is legacy.
+> Background jobs use **Delayed Job** (`config/delayed_job.rb`, `delayed_jobs` table); Redis is not required.
+> `config/sidekiq.rb`, `config/sidekiq.yml` and the `redis` key of `config_template.yml` are legacy leftovers
+> that no application code loads.
 
 ## Repository layout
 

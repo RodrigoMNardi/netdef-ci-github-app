@@ -2,7 +2,7 @@
 
 ## Local setup
 
-Prerequisites: Ruby 3.1+, PostgreSQL, Git (Redis is only needed for the legacy Sidekiq code).
+Prerequisites: Ruby 3.1.2+, PostgreSQL, Git, `libpq-dev`. Redis is not needed. The root [README](../../README.md) has the full installation steps.
 
 ```bash
 bundle install
@@ -29,7 +29,7 @@ Never hardcode URLs, credentials or repository names.
 | `github_apps[]` (`login`, `cert`, `repo`) | Per-GitHub-App/repository JWT credentials (used by `Github::Check`) |
 | `metrics_auth` (`username`, `password`) | Basic Auth for `/metrics` |
 | `slack_bot_url` | Target of Slack notifications |
-| `redis` | Legacy |
+| `redis` | Legacy, unused |
 
 Slack bot (`slack_bot.netdef.org`) and Bamboo credentials come from `~/.netrc`.
 
@@ -72,8 +72,8 @@ flowchart TB
 | `CiJobFetchTopotestFailures` | Delayed Job | Fetches failures from the logs (up to 4 attempts, +5 min each) |
 | `TimeoutExecution` | Delayed Job (every 30 min) | If the suite has not changed for > 2 h, calls `Finished` with `hanged: true` |
 | `WatchDog` | Script (cron) | Reconciles every suite with `queued/in_progress` stages through `Finished` |
-| `PrBambooSync` | Script (cron) | Report: compares active GitHub checks against Bamboo state (24 h–2 h window) |
-| `SingleSync` | Manual script | `ruby workers/single_sync.rb PROJ-PLAN-123` — resyncs one suite |
+| `PrBambooSync` | Script (cron) | Report: compares active GitHub checks against Bamboo state (24 h–2 h window). **Known bug**: `process_pr` reads `pr` instead of its `pr_object` argument, so it raises `NameError` |
+| `SingleSync` | Manual script | `ruby workers/single_sync.rb PROJ-PLAN-123` — resyncs one suite. **Currently broken**: it requires `workers/base.rb`, which does not exist |
 | `SlackUsername2Id` | Delayed Job | Resolves the `slack_id` of a `GithubUser` |
 
 Delayed Job (`config/delayed_job.rb`): `max_attempts = 5`, `max_run_time = 5 min`, `sleep_delay = 5 s`,

@@ -45,7 +45,7 @@ Look in `lib/helpers/prometheus_metrics/metrics_definitions.rb` first; only then
 
 | Symptom | Where to look |
 |---------|---------------|
-| Check stuck on "in progress" | `logs/pr<N>.log`, `github_plan_execution_finished.log`; run `ruby workers/single_sync.rb <PLAN-KEY>` or `Github::PlanExecution::Finished.new({'bamboo_ref' => ref}).finished` in `bin/console` |
+| Check stuck on "in progress" | `logs/pr<N>.log`, `github_plan_execution_finished.log`; run `Github::PlanExecution::Finished.new({'bamboo_ref' => ref}).finished` in `bin/console` |
 | Webhook returns 401/404 | `auth_signature.password` in `config.yml`; the `X-Hub-Signature-256` header |
 | Plan does not trigger | `github_plan_run.log`; Bamboo response (429 = concurrent build limit reached) |
 | Job does not run | `delayed_jobs` table (`last_error`, `attempts`), `delayed_job.log`, correct queue |
@@ -62,6 +62,8 @@ Look in `lib/helpers/prometheus_metrics/metrics_definitions.rb` first; only then
 - `PullRequest#plans` is reassigned on every event from `Plan.github_repo_name`.
 - Multi-plan: check names get a ` - <plan>` suffix when `multi_plan?` is enabled and the PR has more than one plan
   (`Build::Action#stage_name`, `Stage#suffix`).
+- `workers/single_sync.rb` cannot load (missing `workers/base.rb`) and `PrBambooSync#process_pr` references an undefined
+  `pr` variable. Fix them before relying on those scripts.
 - Do not stub `Time.now` globally; do not use ActiveJob; do not create queues outside 0–9 without updating `config.ru`.
 
 ## Checklist before opening a PR

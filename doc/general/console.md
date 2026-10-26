@@ -6,13 +6,19 @@ This document explains how to access the console (IRB) and perform some basic ro
 
 Access the project root and run the following command:
 
-`bin/console.rb <env>`
+`bin/console <env>`
 
 By default, the production environment is accessed.
 
-Example: `bin/console.rb`
+Example: `bin/console`
 
-If you want to access the development environment, just run the command: `bin/console.rb development`
+If you want to access the development environment, just run the command: `bin/console development`
+
+The console loads the application and Delayed Job configuration (`config/setup` and `config/delayed_job`).
+It also defines helper commands to manage organizations and GitHub/Slack users (`find_organization`,
+`create_organization`, `edit_organization`, `find_github_user`, `add_user_in_organization`,
+`remove_user_from_organization`, `add_github_user_slack_user`). They are described in the `Console`
+section of the [README](../../README.md).
 
 # Query
 
@@ -39,8 +45,8 @@ for a test with the name "TopoTests Debian 10 amd64 Part 1"
 
 # Require
 
-In this version there is still no autoloading of the project's classes, if you wanted to load a class just 
-execute the following command:
+The console already loads the main project classes (models, `Github::*`, `BambooCi::*`, workers).
+If you need a class that is not loaded, require it explicitly, for example:
 `require_relative 'lib/github/check.rb'`
 
-This will load the Github::Check class which allows you to send information to GitHub
+This will load the Github::Check class which allows you to send information to GitHub.
