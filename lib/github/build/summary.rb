@@ -133,7 +133,7 @@ module Github
         url = "https://#{GitHubApp::Configuration.instance.ci_url}/browse/#{stage.check_suite.bamboo_ci_ref}"
         output = {
           title: "#{stage.name} summary",
-          summary: "#{@formatter.summary_basic_output(stage)}\nDetails at [#{url}](#{url}).".force_encoding('utf-8')
+          summary: @formatter.summary_with_footer(stage, url)
         }
 
         finished_stage_update(stage, output)
@@ -157,7 +157,7 @@ module Github
         url = "https://#{GitHubApp::Configuration.instance.ci_url}/browse/#{@check_suite.bamboo_ci_ref}"
         output = {
           title: "#{stage.name} summary",
-          summary: "#{@formatter.summary_basic_output(stage)}\nDetails at [#{url}](#{url}).".force_encoding('utf-8')
+          summary: @formatter.summary_with_footer(stage, url)
         }
 
         logger(Logger::WARN, "Updating stage: #{stage.name} to in_progress")

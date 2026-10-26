@@ -22,6 +22,12 @@ module Github
           header[0..65_535]
         end
 
+        def summary_with_footer(stage, url)
+          footer = "\nDetails at [#{url}](#{url}).\n\nLast updated: #{Time.now.utc.strftime('%Y-%m-%d %H:%M:%S UTC')}"
+
+          "#{summary_basic_output(stage)}#{footer}".force_encoding('utf-8')
+        end
+
         def generate_message(name, job)
           failures = tests_message(job)
           failures = build_message(job) if name.downcase.match?('build')
